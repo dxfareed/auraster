@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+    --font-retro: 'VT323', monospace;
+    --bg-dark: #111214;
+    --border-glow: #1c2324;
+    --text-primary: #e4e5e7;
+    --accent-green: #36f07c;
+    --text-secondary: #5f666b;
+}
+
+.y2k-container {
+    display: grid;
+    grid-template-columns: 1fr 600px 1fr; 
+    align-items: flex-start;
+    gap: 30px;
+    font-family: var(--font-retro);
+    background: var(--bg-dark);
+    padding: 40px;
+    min-height: 100vh;
+    color: var(--text-primary);
+    font-size: 20px;
+}
+
+.frame-wing, .profile-card-main {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border-glow);
+    border-radius: 8px;
+    box-shadow: 0 0 10px 0px var(--border-glow);
+    padding: 20px;
+}
+
+.profile-card-main {
+    padding: 50px;
+    text-align: center;
+}
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+.profile-name {
+    font-size: 2.5rem;
+    color: var(--text-primary);
+}
+.profile-username {
+    color: var(--text-secondary);
+    margin-top: -5px;
+}
+
+.profile-bio-box {
+    padding: 15px 0;
+    margin: 20px 0;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    text-align: center;
+    margin: 30px 0;
+}
+.profile-stats span {
+    display: block;
+    font-size: 2rem;
+    color: var(--accent-green);
+}
+.profile-stats p {
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.aura-score-widget {
+    margin-top: 30px;
+}
+
+.aura-title {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.score-display {
+    font-size: 4rem;
+    line-height: 1;
+    margin-top: 10px;
+}
+.score-display .max-score {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.pfp-analysis {
+    margin-top: 25px;
+    color: var(--text-secondary);
+}
+.pfp-class {
+    color: var(--accent-green);
+}
+
+.widget-header {
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-glow);
+}
+.widget-header .blink-text {
+    color: var(--accent-green);
+    animation: blink 1.5s infinite;
+}
+
+.diagnostics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.stat-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-value .score-current {
+    color: var(--accent-green);
+    font-weight: bold;
+}
+.stat-value .score-max {
+    color: var(--text-secondary);
+}
+
+.score-progress,
+.card-background-stickers,
+.sticker {
+    display: none;
+}
+
+.loading-widget, .error-dialog {
+    width: 300px; padding: 20px; border: 1px solid var(--border-glow);
+    box-shadow: 0 0 10px 0px var(--border-glow);
+    background: var(--bg-dark); border-radius: 8px; text-align: center; margin: 0 auto;
+}
+.pixel-loader {
+    width: 48px; height: 48px; border-radius: 50%;
+    margin: 15px auto; border: 4px solid var(--text-secondary);
+    border-top-color: var(--accent-green); animation: spin 1s infinite linear;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -15,6 +15,7 @@ import {
   TransactionStatusLabel,
   TransactionStatus,
 } from "@coinbase/onchainkit/transaction";
+import Link from 'next/link';
 import { useNotification } from "@coinbase/onchainkit/minikit";
 
 type ButtonProps = {
@@ -164,12 +165,17 @@ export function Home({ setActiveTab }: HomeProps) {
         <p className="text-[var(--app-foreground-muted)] mb-4">
           This is a minimalistic Mini App built with OnchainKit components.
         </p>
-        <Button
-          onClick={() => setActiveTab("features")}
-          icon={<Icon name="arrow-right" size="sm" />}
-        >
-          Explore Features
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={() => setActiveTab("features")}
+            icon={<Icon name="arrow-right" size="sm" />}
+          >
+            Explore Features
+          </Button>
+          <Link href="/profile">
+            <Button variant="secondary">View Profile</Button>
+          </Link>
+        </div>
       </Card>
 
       <TodoList />
