@@ -1,105 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-    useMiniKit,
-    useAddFrame,
-    useOpenUrl,
-} from "@coinbase/onchainkit/minikit";
-import './profile-card.css';
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import './style.css';
+import { ApiResponse } from "./types";
+import { StatBar } from "./StatBar";
+import { ScoreModal } from "./ScoreModal";
 
-interface NeynarProfile {
-  pfp_url: string;
-  username: string;
-  display_name: string;
-}
-
-interface StatDetails {
-  score: number;
-  tier: string;
-  percentage: number;
-}
-
-interface StatSheet {
-  total_score: number;
-  overall_aura: string;
-  stats: {
-    name: StatDetails;
-    bio: StatDetails;
-    follow_ratio: StatDetails;
-    algo_pull: StatDetails;
-  };
-  rank: string;
-  aura_points: number;
-  raw_breakdown: { [key: string]: number };
-}
-
-interface ApiResponse {
-  stat_sheet: StatSheet;
-  profile_data: NeynarProfile;
-}
-
-function StatBar({ name, percentage, tier }: { name: string, percentage: number, tier: string }) {
-  const tierClass = tier.toLowerCase();
-  return (
-    <div className="stat-row">
-      <div className="stat-header">
-        <span className="stat-name">{name}</span>
-        <span className={`stat-tier ${tierClass}`}>{tier}</span>
-      </div>
-      <div className="stat-bar-container">
-        <div className="stat-bar-progress" style={{ width: `${Math.min(percentage, 100)}%` }}>
-          <span className="stat-percentage">{percentage}%</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ScoreModal({ breakdown, onClose }: { breakdown?: { [key: string]: number }, onClose: () => void }) {
-  const iconMap: { [key: string]: string } = { username: "👤", pfp: "🖼️", pro_status: "⭐", bio: "✍️", location: "📍", banner: "🌇", follow_ratio: "📊", verified_accounts: "✅", power_badge: "⚡", neynar_score: "🤖" };
-
-  if (!breakdown) {
-    return (
-      <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-header">
-            <h3>Full Aura Report</h3>
-            <button className="close-button" onClick={onClose}>X</button>
-          </div>
-          <div className="modal-body">
-            <p>Detailed breakdown not available for this user.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Full Aura Report</h3>
-          <button className="close-button" onClick={onClose}>
-            <img src="/x.png"width={40} height={50} alt="Close"/>
-          </button>
-        </div>
-        <div className="modal-body">
-          {Object.entries(breakdown).map(([key, value]) => (
-            <div className="report-row" key={key}>
-              <span className="report-icon">{iconMap[key]}</span>
-              <span className="report-label">{key.replace('_', ' ')}</span>
-              <div className="report-dots"></div>
-              <span className="report-score">{Number(value).toFixed(1)} / 20</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function ProfileCard({ usernameToRate }: { usernameToRate: string }) {
+export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
   const [apiData, setApiData] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +31,9 @@ export function ProfileCard({ usernameToRate }: { usernameToRate: string }) {
         const data: ApiResponse = await response.json();
         console.log("Fetched API Data:", data);
         setApiData(data);
+        if (onProfileLoad) {
+          onProfileLoad();
+        }
       } catch (err: any) {
         setError(err.message || "Failed to fetch rating.");
       } finally {
@@ -130,7 +41,7 @@ export function ProfileCard({ usernameToRate }: { usernameToRate: string }) {
       }
     };
     fetchScore();
-  }, [usernameToRate]);
+  }, [usernameToRate, onProfileLoad]);
 
   if (isLoading) { return <div>Loading...</div>; }
   if (error) { return <div>Error: {error}</div>; }
