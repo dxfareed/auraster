@@ -21,7 +21,7 @@ export function Leaderboard() {
         const response = await fetch('http://localhost:3002/leaderboard');
         if (!response.ok) throw new Error("Failed to fetch leaderboard.");
         const data = await response.json();
-        setLeaderboardData(data.slice(0, 10)); // Limit to top 20
+        setLeaderboardData(data.slice(0, 10)); // Limit to top 10
       } catch (err: any) {
         setError(err.message);
       } finally {

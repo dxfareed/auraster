@@ -80,7 +80,9 @@ function ScoreModal({ breakdown, onClose }: { breakdown?: { [key: string]: numbe
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>Full Aura Report</h3>
-          <button className="close-button" onClick={onClose}>X</button>
+          <button className="close-button" onClick={onClose}>
+            <img src="/x.png"width={40} height={50} alt="Close"/>
+          </button>
         </div>
         <div className="modal-body">
           {Object.entries(breakdown).map(([key, value]) => (
@@ -135,48 +137,60 @@ export function ProfileCard({ usernameToRate }: { usernameToRate: string }) {
   if (!apiData) { return <div>No data available.</div>; }
 
   const { stat_sheet, profile_data } = apiData;
+  console.log(apiData.profile_data);
 
   if (!profile_data) { return <div>Profile data not available.</div>; }
+  //@ts-ignore
+  const userBannerUrl = profile_data.profile?.banner?.url;
+  //@ts-ignore
+  const isProUser = profile_data.power_badge !== false;
 
+  const bannerToShow = userBannerUrl 
+    ? userBannerUrl 
+    : isProUser 
+      ? "/uhm-pro.jpg" 
+      : "/go-pro.png";
   return (
     <>
-      <div className="auralized-card">
-        <div className="card-header">
-          <img src="/aura-doc.jpg" alt="Banner" className="banner-image" />
-          <div className="header-stickers">
-            <div className="logo-sticker">Aura Doc</div>
-            <div className="url-sticker">farm aura the healthy way</div>
-            <div className="total-grade-sticker">
-              <span>A</span> TOTAL
-            </div>
-          </div>
+    <div className="card-wrapper">
+        <img src="/info-banner.png" alt="text" className="header-logo-image"/>
+        <div className="total-grade-sticker">
+          <span>A</span> TOTAL
         </div>
-
-        <div className="card-body">
-          <div className="analysis-header">
-            aura analysis for
-            <img src={profile_data.pfp_url} alt="PFP" className="inline-pfp" />
-            @{profile_data.username}
+          
+        <div className="auralized-card">
+          <div className="card-header">
+           <img src={bannerToShow} alt="Banner" className="banner-image"/>
+            <div className="header-stickers"></div>
+            <div className="header-stickers"></div>
           </div>
 
-          <div className="summary-stats">
-            <div className="stat-box rank-box">RANK {stat_sheet.rank}</div>
-            <div className="stat-box points-box">{stat_sheet.aura_points} AURA POINTS</div>
-          </div>
+          <div className="card-body">
+            <div className="analysis-header">
+              aura analysis for
+              <img src={profile_data.pfp_url} alt="PFP" className="inline-pfp" />            
+              @{profile_data.username}
+            </div>
 
-          <div className="detailed-stats">
-            <StatBar name="name" percentage={stat_sheet.stats.name.percentage} tier={stat_sheet.stats.name.tier} />
-            <StatBar name="bio" percentage={stat_sheet.stats.bio.percentage} tier={stat_sheet.stats.bio.tier} />
-            <StatBar name="follow ratio" percentage={stat_sheet.stats.follow_ratio.percentage} tier={stat_sheet.stats.follow_ratio.tier} />
-            <StatBar name="algo pull" percentage={stat_sheet.stats.algo_pull.percentage} tier={stat_sheet.stats.algo_pull.tier} />
-          </div>
+            <div className="summary-stats">
+              <div className="stat-box rank-box">RANK {stat_sheet.rank}</div>
+              <div className="stat-box points-box">{stat_sheet.aura_points} AURA POINTS</div>
+            </div>
 
-          <div className="footer">
-            overall you have <div className="stat-box overall-aura-box">{stat_sheet.overall_aura}</div>
-            <button className="details-button" onClick={() => setIsModalOpen(true)}>
-              View Full Report
-            </button>
-            <p className="version-text">aura doc version 1.0</p>
+            <div className="detailed-stats">
+              <StatBar name="name" percentage={stat_sheet.stats.name.percentage} tier={stat_sheet.stats.name.tier} />
+              <StatBar name="bio" percentage={stat_sheet.stats.bio.percentage} tier={stat_sheet.stats.bio.tier} />
+              <StatBar name="follow ratio" percentage={stat_sheet.stats.follow_ratio.percentage} tier={stat_sheet.stats.follow_ratio.tier} />
+              <StatBar name="algo pull" percentage={stat_sheet.stats.algo_pull.percentage} tier={stat_sheet.stats.algo_pull.tier} />
+            </div>
+
+            <div className="footer">
+              overall you have <div className="stat-box overall-aura-box">{stat_sheet.overall_aura}</div>
+              <button className="details-button" onClick={() => setIsModalOpen(true)}>
+                View Full Report
+              </button>
+              <p className="version-text">auraster version 1.0</p>
+            </div>
           </div>
         </div>
       </div>
