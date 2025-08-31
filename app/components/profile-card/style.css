@@ -14,7 +14,8 @@
 
 .card-wrapper {
   position: relative;
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   margin: 40px auto;
 }
 
@@ -298,6 +299,51 @@
   color: #fff;
 }
 
+.auralized-card.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  border-color: transparent;
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.dvd-logo {
+  position: absolute;
+  width: 120px;
+  height: auto;
+  animation: move-x 10s linear infinite, move-y 7s linear infinite;
+}
+
+.loading-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: 700;
+  animation: fadeInText 1.5s infinite alternate;
+}
+
+@keyframes move-x {
+  0%, 100% { left: 0; }
+  50% { left: calc(100% - 120px); }
+}
+
+@keyframes move-y {
+  0%, 100% { top: 0; }
+  50% { top: calc(100% - 60px); } /* Adjust based on logo's aspect ratio */
+}
+
+@keyframes fadeInText {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -307,5 +353,77 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    margin: 20px auto;
+  }
+
+  .header-logo-image {
+    width: 200px;
+    left: -20px;
+  }
+
+  .total-grade-sticker {
+    width: 60px;
+    height: 60px;
+    right: -10px;
+  }
+
+  .total-grade-sticker span {
+    font-size: 2rem;
+  }
+
+  .card-header {
+    height: 150px;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .analysis-header {
+    font-size: 1rem;
+    gap: 8px;
+  }
+
+  .inline-pfp {
+    width: 28px;
+    height: 28px;
+  }
+
+  .summary-stats {
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .stat-box {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .detailed-stats {
+    gap: 15px;
+    padding: 15px 0;
+  }
+
+  .stat-tier {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+
+  .stat-bar-container {
+    height: 25px;
+  }
+
+  .footer {
+    font-size: 1rem;
+  }
+
+  .details-button {
+    padding: 6px 10px;
+    font-size: 0.9rem;
   }
 }

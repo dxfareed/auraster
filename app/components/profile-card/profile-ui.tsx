@@ -43,7 +43,31 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
     fetchScore();
   }, [usernameToRate, onProfileLoad]);
 
-  if (isLoading) { return <div>Loading...</div>; }
+  const [loadingText, setLoadingText] = useState("Checking name...");
+
+  useEffect(() => {
+    if (isLoading) {
+      const loadingTexts = ["Checking name...", "Analyzing bio...", "Calculating algo pull...", "Finalizing aura..."];
+      let currentIndex = 0;
+      const interval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % loadingTexts.length;
+        setLoadingText(loadingTexts[currentIndex]);
+      }, 1500);
+
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return (
+      <div className="card-wrapper">
+        <div className="auralized-card loading-container">
+          <img src="/auraster-logo.png" alt="Loading..." className="dvd-logo" />
+          <div className="loading-text">{loadingText}</div>
+        </div>
+      </div>
+    );
+  }
   if (error) { return <div>Error: {error}</div>; }
   if (!apiData) { return <div>No data available.</div>; }
 

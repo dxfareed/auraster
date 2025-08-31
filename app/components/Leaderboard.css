@@ -10,6 +10,18 @@
   color: var(--text-primary);
 }
 
+.widget-header strong {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  color: var(--card-border-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0px #000;
+  display: block;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
 .leaderboard-list {
   list-style: none;
   padding: 0;
@@ -62,6 +74,66 @@
   color: var(--accent-green);
   font-weight: bold;
 }
+
+/* Skeleton Loader Styles */
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-glow);
+}
+
+.skeleton {
+  background-color: #333;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton.rank {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.skeleton.pfp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.skeleton-user-info {
+  flex-grow: 1;
+}
+
+.skeleton.name {
+  width: 70%;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton.username {
+  width: 50%;
+  height: 12px;
+}
+
+.skeleton.score {
+  width: 40px;
+  height: 24px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-color: #333;
+  }
+  50% {
+    background-color: #444;
+  }
+  100% {
+    background-color: #333;
+  }
+}
+
 
 .details-button {
   background: #333;
@@ -143,4 +215,33 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .leaderboard-widget {
+    padding: 15px;
+  }
+
+  .leaderboard-row .rank {
+    font-size: 1rem;
+    width: 30px;
+  }
+
+  .leaderboard-row .pfp {
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+  }
+
+  .leaderboard-row .display-name {
+    font-size: 1rem;
+  }
+
+  .leaderboard-row .username {
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-row .score {
+    font-size: 1.2rem;
+  }
 }

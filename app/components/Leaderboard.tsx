@@ -33,13 +33,34 @@ export function Leaderboard() {
     fetchLeaderboard();
   }, []);
 
-  if (isLoading) return <div className="leaderboard-widget"><p>Loading Leaderboard...</p></div>;
+  if (isLoading) {
+    return (
+      <div className="leaderboard-widget">
+        <div className="widget-header">
+          <span className="blink-text">■</span> TOP 10 AURAS
+        </div>
+        <div className="leaderboard-list">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="skeleton-row">
+              <div className="skeleton rank"></div>
+              <div className="skeleton pfp"></div>
+              <div className="skeleton-user-info">
+                <div className="skeleton name"></div>
+                <div className="skeleton username"></div>
+              </div>
+              <div className="skeleton score"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div className="leaderboard-widget"><p>Error: {error}</p></div>;
 
   return (
     <div className="leaderboard-widget">
       <div className="widget-header">
-        <span className="blink-text">■</span> TOP 10 AURAS
+        <strong>LEGENDS</strong>
       </div>
       <ol className="leaderboard-list">
         {leaderboardData.map(user => (
