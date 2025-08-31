@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import './Leaderboard.css';
+import { API_URLS } from "@/lib/api-config";
 
 interface LeaderboardEntry {
   rank: number;
@@ -18,7 +19,7 @@ export function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch('http://localhost:3002/leaderboard');
+        const response = await fetch(API_URLS.LEADERBOARD);
         if (!response.ok) throw new Error("Failed to fetch leaderboard.");
         const data = await response.json();
         setLeaderboardData(data.slice(0, 10)); // Limit to top 10

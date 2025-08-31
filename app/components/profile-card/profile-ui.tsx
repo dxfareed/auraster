@@ -6,6 +6,7 @@ import './style.css';
 import { ApiResponse } from "./types";
 import { StatBar } from "./StatBar";
 import { ScoreModal } from "./ScoreModal";
+import { API_URLS } from "@/lib/api-config";
 
 export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
   const [apiData, setApiData] = useState<ApiResponse | null>(null);
@@ -21,8 +22,7 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
       setIsLoading(true);
       setError(null);
       try {
-        const profile_rate_url = process.env.NEXT_PUBLIC_RATE_PROFILE || 'http://localhost:3002/rate-user';
-        const response = await fetch(profile_rate_url, {
+        const response = await fetch(API_URLS.RATE_USER, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: usernameToRate }),
