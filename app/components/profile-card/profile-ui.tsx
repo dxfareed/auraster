@@ -26,6 +26,10 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { context } = useMiniKit();
 
+  const handleShare = () => {
+    console.log("clicked");
+  };
+
   console.log("user as :", context?.user.fid);
 
   useEffect(() => {
@@ -58,12 +62,23 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
 
   useEffect(() => {
     if (isLoading) {
-      const loadingTexts = ["Checking name...", "Analyzing bio...", "Calculating algo pull...", "Finalizing aura..."];
+      const loadingTexts = [
+        "Checking name...", 
+        "Analyzing bio...", 
+        "Checking pfp...",
+        "Analyzing location...",
+        "Checking banner...",
+        "Verifying pro status...",
+        "Calculating neynar score...",
+        "Analyzing follow ratio...",
+        "Checking verified accounts...",
+        "Calculating algo pull..."
+      ];
       let currentIndex = 0;
       const interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % loadingTexts.length;
         setLoadingText(loadingTexts[currentIndex]);
-      }, 1500);
+      }, 3000);
 
       return () => clearInterval(interval);
     }
@@ -131,11 +146,24 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
             </div>
 
             <div className="footer">
-              overall you have <div className="stat-box overall-aura-box">{stat_sheet.overall_aura}</div>
-              <button className="details-button" onClick={() => setIsModalOpen(true)}>
-                view full report
-              </button>
-              <p className="version-text">auraster by dxfareed</p>
+              <div className="overall-line">
+                overall you have <div className="stat-box overall-aura-box">{stat_sheet.overall_aura}</div>
+              </div>
+              <div className="button-line">
+                <button className="details-button" onClick={() => setIsModalOpen(true)}>
+                  view full report
+                </button>
+                <button className="share-button" onClick={() => handleShare()}>
+                  share
+                </button>
+              </div>
+              <div className="version-section">
+                <p className="version-text">
+                  auraster by 
+                  <img src="https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/8fbbe5e2-0c53-48b8-c5f1-4a791b76ce00/rectcrop3" alt="PFP" className="version-pfp" />
+                  <a href="https://farcaster.xyz" target="_blank" rel="noopener noreferrer" className="author-link">dxfareed</a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
