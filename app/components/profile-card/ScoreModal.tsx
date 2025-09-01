@@ -1,6 +1,5 @@
 
 export function ScoreModal({ breakdown, onClose }: { breakdown?: { [key: string]: number }, onClose: () => void }) {
-  const iconMap: { [key: string]: string } = { username: "👤", pfp: "🖼️", pro_status: "⭐", bio: "✍️", location: "📍", banner: "🌇", follow_ratio: "📊", verified_accounts: "✅", power_badge: "⚡", neynar_score: "🤖" };
 
   if (!breakdown) {
     return (
@@ -24,13 +23,12 @@ export function ScoreModal({ breakdown, onClose }: { breakdown?: { [key: string]
         <div className="modal-header">
           <h3>Full Aura Report</h3>
           <button className="close-button" onClick={onClose}>
-            <img src="/x.png"width={40} height={50} alt="Close"/>
+            X
           </button>
         </div>
         <div className="modal-body">
           {Object.entries(breakdown).map(([key, value]) => (
             <div className="report-row" key={key}>
-              <span className="report-icon">{iconMap[key]}</span>
               <span className="report-label">{key.replace('_', ' ')}</span>
               <div className="report-dots"></div>
               <span className="report-score">{parseFloat(Number(value).toFixed(1))} / 20</span>

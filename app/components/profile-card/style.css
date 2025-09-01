@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 :root {
   --font-display: 'Bangers', cursive;
   --font-body: 'Inter', sans-serif;
+  --font-mono: 'VT323', monospace;
   --bg-color: #000000;
   --card-border-color: #ff4d4d;
   --text-color: #ffffff;
@@ -67,14 +69,16 @@
 
 .card-header {
   position: relative;
-  height: 200px;
+  height: 120px;
   border-bottom: 2px solid var(--card-border-color);
+  overflow: hidden;
 }
 
 .banner-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .card-body {
@@ -86,10 +90,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 500;
   padding-bottom: 15px;
   border-bottom: 1px solid #333;
+  font-family: monospace;
 }
 
 .inline-pfp {
@@ -112,6 +117,9 @@
   padding: 8px 15px;
   border: 2px solid white;
   box-shadow: 3px 3px 0px black;
+  font-family: 'VT323', monospace;
+  font-size: 22px !important;
+  letter-spacing: 1px;
 }
 
 .detailed-stats {
@@ -135,19 +143,30 @@
 }
 
 .stat-name {
-  text-transform: uppercase;
-  color: var(--subtext-color);
+  text-transform: lowercase;
+  color: white;
   font-weight: 700;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
 }
 
 .stat-tier {
   background: var(--stat-box-bg);
   color: white;
-  font-weight: 900;
+  font-weight: 700;
   padding: 4px 10px;
   border: 2px solid white;
   box-shadow: 2px 2px 0px black;
-  font-size: 0.8rem;
+  font-size: 18px !important;
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+}
+
+.points-box{
+  background-color: #8a63d2;
+}
+.stat-total-points{
+  font-size: 24px !important;
 }
 
 .stat-bar-container {
@@ -168,14 +187,17 @@
 
 .stat-percentage {
   color: black;
-  font-weight: 900;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Courier New', monospace;
 }
 
 .footer {
   padding-top: 20px;
   text-align: center;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: monospace;
 }
 
 .overall-aura-box {
@@ -244,24 +266,28 @@
 
 .modal-header h3 {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: 'VT323', monospace;
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
+  text-transform: uppercase;
 }
 
 .close-button {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 1.5rem;
+  color: #ff0000 !important;
+  font-size: 1.5rem !important;
+  font-weight: 900 !important;
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
 }
 
 .close-button:hover {
-  opacity: 1;
+  background: #ff6b6b;
+  transform: scale(1.1);
+  box-shadow: 3px 3px 0px black;
 }
 
 .modal-body {
@@ -282,9 +308,10 @@
 }
 
 .report-label {
-  text-transform: uppercase;
-  color: var(--subtext-color);
+  text-transform: lowercase !important;
+  color: white !important;
   font-weight: 700;
+  font-family: 'Courier New', monospace;
 }
 
 .report-dots {
@@ -297,6 +324,7 @@
 .report-score {
   font-weight: 700;
   color: #fff;
+  font-family: 'Courier New', monospace;
 }
 
 .auralized-card.loading-container {
@@ -362,8 +390,9 @@
   }
 
   .header-logo-image {
-    width: 200px;
-    left: -20px;
+    width: 170px;
+    left: -19px;
+    top: -13px;
   }
 
   .total-grade-sticker {

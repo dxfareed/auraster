@@ -8,6 +8,17 @@ import { StatBar } from "./StatBar";
 import { ScoreModal } from "./ScoreModal";
 import { API_URLS } from "@/lib/api-config";
 
+// Function to calculate tier based on score
+function calculateTier(score: number): string {
+  if (score >= 190) return "S";
+  if (score >= 170) return "A";
+  if (score >= 140) return "B";
+  if (score >= 100) return "C";
+  if (score >= 60) return "D";
+  if (score >= 0) return "F";
+  return "F"; // Default fallback
+}
+
 export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
   const [apiData, setApiData] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,7 +101,7 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
     <div className="card-wrapper">
         <img src="/info-banner.png" alt="text" className="header-logo-image"/>
         <div className="total-grade-sticker">
-          <span>A</span> TOTAL
+          <span>{calculateTier(stat_sheet.total_score)}</span> TOTAL
         </div>
           
         <div className="auralized-card">
@@ -109,7 +120,7 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
 
             <div className="summary-stats">
               <div className="stat-box rank-box">RANK {stat_sheet.rank}</div>
-              <div className="stat-box points-box">{stat_sheet.aura_points} AURA POINTS</div>
+              <div className="stat-box points-box"><span className="stat-total-points">{stat_sheet.total_score}</span> AURA POINTS</div>
             </div>
 
             <div className="detailed-stats">
@@ -122,9 +133,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
             <div className="footer">
               overall you have <div className="stat-box overall-aura-box">{stat_sheet.overall_aura}</div>
               <button className="details-button" onClick={() => setIsModalOpen(true)}>
-                View Full Report
+                view full report
               </button>
-              <p className="version-text">auraster version 1.0</p>
+              <p className="version-text">auraster by dxfareed</p>
             </div>
           </div>
         </div>
