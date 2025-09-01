@@ -9,8 +9,8 @@ export function StatBar({ name, percentage, tier }: { name: string, percentage: 
       </div>
       <div className="stat-bar-container">
         <div className="stat-bar-progress" style={{ width: `${Math.min(percentage, 100)}%` }}>
-          <span className="stat-percentage">{percentage}%</span>
         </div>
+        <span className="stat-percentage">{percentage}%</span>
       </div>
     </div>
   );

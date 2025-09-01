@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { sdk } from '@farcaster/miniapp-sdk';
+
 import './style.css';
 import { ApiResponse } from "./types";
 import { StatBar } from "./StatBar";
 import { ScoreModal } from "./ScoreModal";
 import { API_URLS } from "@/lib/api-config";
 
-// Function to calculate tier based on score
 function calculateTier(score: number): string {
   if (score >= 190) return "S";
   if (score >= 170) return "A";
@@ -16,7 +16,7 @@ function calculateTier(score: number): string {
   if (score >= 100) return "C";
   if (score >= 60) return "D";
   if (score >= 0) return "F";
-  return "F"; // Default fallback
+  return "F"; 
 }
 
 export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
@@ -24,13 +24,30 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { context } = useMiniKit();
+  
+  const handleShare = async () => {
+    if (!apiData) return;
 
-  const handleShare = () => {
-    console.log("clicked");
+    const { profile_data } = apiData;
+    const appUrl = window.location.origin;
+    const frameUrl = `${appUrl}/api/frame?username=${profile_data.username}`;
+
+    try {
+      await sdk.actions.composeCast({
+        text: `Just analyzed @${profile_data.username}'s Farcaster aura! \n\nCheck your aura at Auraster! 🔮`,
+        embeds: [frameUrl],
+      });
+
+      await sdk.actions.openMiniApp({ url: appUrl });
+
+    } catch (error) {
+      console.error("Error sharing aura analysis:", error);
+      const shareText = `Just analyzed @${profile_data.username}'s Farcaster aura! Check your aura at ${appUrl}`;
+      navigator.clipboard.writeText(shareText);
+      alert('Share text copied to clipboard!');
+    }
   };
 
-  console.log("user as :", context?.user.fid);
 
   useEffect(() => {
     const fetchScore = async () => {
@@ -39,7 +56,10 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
       try {
         const response = await fetch(API_URLS.RATE_USER, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ username: usernameToRate }),
         });
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -49,8 +69,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
         if (onProfileLoad) {
           onProfileLoad();
         }
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch rating.");
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch rating.";
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -101,9 +122,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
   console.log(apiData.profile_data);
 
   if (!profile_data) { return <div>Profile data not available.</div>; }
-  //@ts-ignore
+  //@ts-expect-error - profile_data structure may vary
   const userBannerUrl = profile_data.profile?.banner?.url;
-  //@ts-ignore
+  //@ts-expect-error - power_badge property may not exist
   const isProUser = profile_data.power_badge !== false;
 
   const bannerToShow = userBannerUrl 

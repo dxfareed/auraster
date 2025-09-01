@@ -19,12 +19,25 @@ export function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(API_URLS.LEADERBOARD);
-        if (!response.ok) throw new Error("Failed to fetch leaderboard.");
-        const data = await response.json();
+        const response = await fetch(API_URLS.LEADERBOARD, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const responseText = await response.text();
+        const data = JSON.parse(responseText);
         setLeaderboardData(data.slice(0, 10)); // Limit to top 10
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch leaderboard.";
+        console.error('Fetch error:', err);
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
