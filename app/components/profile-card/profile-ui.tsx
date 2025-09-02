@@ -7,6 +7,7 @@ import './style.css';
 import { ApiResponse } from "./types";
 import { StatBar } from "./StatBar";
 import { ScoreModal } from "./ScoreModal";
+import { generateShareableImage } from "./ShareableImage";
 import { API_URLS } from "@/lib/api-config";
 
 function calculateTier(score: number): string {
@@ -18,33 +19,137 @@ function calculateTier(score: number): string {
   if (score >= 0) return "F";
   return "F"; 
 }
+const preloadImages = (apiData: ApiResponse) => {
+  const { profile_data } = apiData;
+  
+  //@ts-expect-error - profile_data structure may vary
+  if (profile_data.profile?.banner?.url) {
+    const bannerImg = new Image();
+    bannerImg.crossOrigin = 'anonymous';
+    //@ts-expect-error - profile_data structure may vary
+    bannerImg.src = profile_data.profile.banner.url;
+  }
+  
+  if (profile_data.pfp_url) {
+    const pfpImg = new Image();
+    pfpImg.crossOrigin = 'anonymous';
+    pfpImg.src = profile_data.pfp_url;
+  }
+  
+  const logoImg = new Image();
+  logoImg.src = '/info-banner.png';
+  
+  const authorImg = new Image();
+  authorImg.crossOrigin = 'anonymous';
+  authorImg.src = "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/8fbbe5e2-0c53-48b8-c5f1-4a791b76ce00/rectcrop3";
+  
+  console.log('Images preloaded for share functionality');
+};
 
 export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
   const [apiData, setApiData] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   
   const handleShare = async () => {
-    if (!apiData) return;
+    if (!apiData || isSharing) return;
 
+    setIsSharing(true);
+    console.log("user clicked share");
     const { profile_data } = apiData;
     const appUrl = window.location.origin;
-    const frameUrl = `${appUrl}/api/frame?username=${profile_data.username}`;
 
     try {
-      await sdk.actions.composeCast({
-        text: `Just analyzed @${profile_data.username}'s Farcaster aura! \n\nCheck your aura at Auraster! 🔮`,
-        embeds: [frameUrl],
-      });
+        const imageDataUrl = await Promise.race([
+        generateShareableImage(apiData),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Image generation timeout')), 10000)
+        )
+      ]);
+      
+      const link = document.createElement('a');
+      link.download = `auraster-${profile_data.username}.png`;
+      link.href = imageDataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      await sdk.actions.openMiniApp({ url: appUrl });
+      try {
+        const blob = await fetch(imageDataUrl).then(r => r.blob());
+        const clipboardItem = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([clipboardItem]);
+        console.log('Image copied to clipboard!');
+      } catch (clipboardError) {
+        console.log('Clipboard image copy not supported:', clipboardError);
+      }
+
+      alert(`✅ Aura analysis image generated and downloaded!\n\n📋 Image also copied to clipboard (if supported)\n\n🎯 You can now paste the image anywhere!`);
+
+      try {
+        if (typeof sdk !== 'undefined' && sdk.actions) {
+          const castText = `Just analyzed @${profile_data.username}'s Farcaster aura! 🎯\n\n` +
+                          `Grade: ${calculateTier(stat_sheet.total_score)}\n` +
+                          `Score: ${stat_sheet.total_score} points\n` +
+                          `Rank: #${stat_sheet.rank}\n\n` +
+                          `Check your own aura at Auraster! 🔮\n` +
+                          `${appUrl}`;
+          let imageUrl = null;
+          try {
+            const response = await fetch(imageDataUrl);
+            const blob = await response.blob();
+            
+            const formData = new FormData();
+            formData.append('image', blob, `auraster-${profile_data.username}.png`);
+          
+           const imgbbKey = process.env.IMGBB_KEY;
+           const imgbbURL = `https://api.imgbb.com/1/upload?key=${imgbbKey}`;
+            const uploadResponse = await fetch(imgbbURL, {
+              method: 'POST',
+              body: formData
+            });
+            
+            if (uploadResponse.ok) {
+              const uploadData = await uploadResponse.json();
+              imageUrl = uploadData.data.url;
+              console.log('Image uploaded successfully:', imageUrl);
+            }
+          } catch (uploadError) {
+            console.log('Image upload failed, sharing without image:', uploadError);
+          }
+
+          if (imageUrl) {
+            await sdk.actions.composeCast({
+              text: castText,
+              embeds: [imageUrl, appUrl],
+            });
+          } else {
+            await sdk.actions.composeCast({
+              text: castText,
+              embeds: [appUrl],
+            });
+          }
+
+          await sdk.actions.openMiniApp({ url: appUrl });
+        }
+      } catch (farcasterError) {
+        console.log('Farcaster sharing not available:', farcasterError);
+      }
 
     } catch (error) {
       console.error("Error sharing aura analysis:", error);
-      const shareText = `Just analyzed @${profile_data.username}'s Farcaster aura! Check your aura at ${appUrl}`;
-      navigator.clipboard.writeText(shareText);
-      alert('Share text copied to clipboard!');
+      
+      try {
+        const shareText = `Just analyzed @${profile_data.username}'s Farcaster aura! Check your aura at ${appUrl}`;
+        await navigator.clipboard.writeText(shareText);
+        alert('Share text copied to clipboard!');
+      } catch (clipboardError) {
+        console.error("Clipboard error:", clipboardError);
+        alert('Failed to share. Please try again.');
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -57,8 +162,7 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
         const response = await fetch(API_URLS.RATE_USER, {
           method: 'POST',
           headers: { 
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ username: usernameToRate }),
         });
@@ -66,6 +170,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
         const data: ApiResponse = await response.json();
         console.log("Fetched API Data:", data);
         setApiData(data);
+        
+        preloadImages(data);
+        
         if (onProfileLoad) {
           onProfileLoad();
         }
@@ -120,6 +227,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
 
   const { stat_sheet, profile_data } = apiData;
   console.log(apiData.profile_data);
+  
+/*   const imageDataUrl = await generateShareableImage(apiData);
+  console.log("imageDataUrl", imageDataUrl); */
 
   if (!profile_data) { return <div>Profile data not available.</div>; }
   //@ts-expect-error - profile_data structure may vary
@@ -174,8 +284,19 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
                 <button className="details-button" onClick={() => setIsModalOpen(true)}>
                   view full report
                 </button>
-                <button className="share-button" onClick={() => handleShare()}>
-                  share
+                <button 
+                  className={`share-button ${isSharing ? 'sharing' : ''}`} 
+                  onClick={() => handleShare()}
+                  disabled={isSharing}
+                >
+                  {isSharing ? (
+                    <>
+                      <span className="loading-spinner"></span>
+                      generating...
+                    </>
+                  ) : (
+                    'share'
+                  )}
                 </button>
               </div>
               <div className="version-section">

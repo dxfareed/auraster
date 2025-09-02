@@ -5,7 +5,7 @@ import {
 } from "@farcaster/frame-sdk";
 import { getUserNotificationDetails } from "@/lib/notification";
 
-const appUrl = process.env.NEXT_PUBLIC_URL || "";
+const appUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
 type SendFrameNotificationResult =
   | {

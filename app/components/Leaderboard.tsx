@@ -4,6 +4,65 @@ import { useEffect, useState } from "react";
 import './Leaderboard.css';
 import { API_URLS } from "@/lib/api-config";
 
+const preloadProfilePictures = (data: LeaderboardEntry[]) => {
+  data.forEach(user => {
+    if (user.pfp_url) {
+      const img = new Image();
+      img.onload = () => {
+      };
+      img.onerror = () => {
+      };
+      img.src = user.pfp_url;
+    }
+  });
+};
+
+const ProfilePicture = ({ src, alt, username, onLoad }: { 
+  src: string; 
+  alt: string; 
+  username: string;
+  onLoad: () => void;
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  const handleLoad = () => {
+    setIsLoaded(true);
+    onLoad();
+  };
+
+  const handleError = () => {
+    setHasError(true);
+  };
+
+  if (hasError) {
+    return (
+      <div className="pfp fallback">
+        {username.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {!isLoaded && (
+        <div className="pfp skeleton-pfp">
+          <div className="skeleton-circle"></div>
+        </div>
+      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img 
+        src={src} 
+        alt={alt} 
+        className={`pfp ${isLoaded ? 'loaded' : 'hidden'}`}
+        onLoad={handleLoad}
+        onError={handleError}
+        loading="lazy"
+      />
+    </>
+  );
+};
+
 interface LeaderboardEntry {
   rank: number;
   username: string;
@@ -16,14 +75,12 @@ export function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(API_URLS.LEADERBOARD, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
+        const response = await fetch(API_URLS.LEADERBOARD);
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -33,7 +90,10 @@ export function Leaderboard() {
         
         const responseText = await response.text();
         const data = JSON.parse(responseText);
-        setLeaderboardData(data.slice(0, 10)); // Limit to top 10
+        const top10Data = data.slice(0, 10);
+        setLeaderboardData(top10Data);
+        
+        preloadProfilePictures(top10Data);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch leaderboard.";
         console.error('Fetch error:', err);
@@ -79,7 +139,12 @@ export function Leaderboard() {
         {leaderboardData.map(user => (
           <li key={user.rank} className="leaderboard-row">
             <span className="rank">{user.rank}</span>
-            <img src={user.pfp_url} alt={user.username} className="pfp" />
+            <ProfilePicture 
+              src={user.pfp_url} 
+              alt={user.username} 
+              username={user.username}
+              onLoad={() => setLoadedImages(prev => new Set(prev).add(user.pfp_url))}
+            />
             <div className="user-info">
               <span className="display-name">{user.display_name}</span>
               <span className="username">@{user.username}</span>

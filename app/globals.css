@@ -22,4 +22,124 @@ body {
   font-weight: 400;
   font-style: normal;
   font-size: 80%;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Responsive container for different screen sizes */
+.responsive-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* iPhone 6, iPhone X, iPhone SE (375px) */
+@media (min-width: 375px) {
+  .responsive-container {
+    max-width: 375px;
+    padding: 0 0.75rem;
+  }
+  
+  body {
+    font-size: 85%;
+  }
+}
+
+/* iPhone 7 Plus, iPhone 8 Plus, iPhone 11, iPhone 12, iPhone 13, iPhone 14 (414px) */
+@media (min-width: 414px) {
+  .responsive-container {
+    max-width: 414px;
+    padding: 0 1rem;
+  }
+  
+  body {
+    font-size: 90%;
+  }
+}
+
+/* iPhone 15 Pro Max, iPhone 15 Plus (430px) */
+@media (min-width: 430px) {
+  .responsive-container {
+    max-width: 430px;
+    padding: 0 1.25rem;
+  }
+  
+  body {
+    font-size: 95%;
+  }
+}
+
+/* Larger phones and tablets */
+@media (min-width: 480px) {
+  .responsive-container {
+    max-width: 480px;
+    padding: 0 1.5rem;
+  }
+  
+  body {
+    font-size: 100%;
+  }
+}
+
+/* Small tablets */
+@media (min-width: 768px) {
+  .responsive-container {
+    max-width: 768px;
+    padding: 0 2rem;
+  }
+}
+
+/* Ensure proper viewport handling */
+@viewport {
+  width: device-width;
+  initial-scale: 1;
+  maximum-scale: 1;
+  user-scalable: no;
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better touch targets for mobile */
+button, 
+input, 
+select, 
+textarea {
+  min-height: 44px; /* iOS recommended minimum */
+}
+
+/* Improve text readability on mobile */
+p, span, div {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safe area handling for notched devices */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
 }

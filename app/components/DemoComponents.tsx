@@ -40,7 +40,7 @@ export function Button({
   icon,
 }: ButtonProps) {
   const baseClasses =
-    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0052FF] disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0052FF] disabled:opacity-50 disabled:pointer-events-none min-h-[44px]";
 
   const variantClasses = {
     primary:
@@ -54,9 +54,9 @@ export function Button({
   };
 
   const sizeClasses = {
-    sm: "text-xs px-2.5 py-1.5 rounded-md",
-    md: "text-sm px-4 py-2 rounded-lg",
-    lg: "text-base px-6 py-3 rounded-lg",
+    sm: "text-xs px-2.5 py-1.5 rounded-md min-h-[36px]",
+    md: "text-sm px-3 sm:px-4 py-2 rounded-lg min-h-[44px]",
+    lg: "text-base px-4 sm:px-6 py-3 rounded-lg min-h-[48px]",
   };
 
   return (
@@ -66,7 +66,7 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
     >
-      {icon && <span className="flex items-center mr-2">{icon}</span>}
+      {icon && <span className="flex items-center mr-1 sm:mr-2">{icon}</span>}
       {children}
     </button>
   );
@@ -101,13 +101,13 @@ function Card({
       role={onClick ? "button" : undefined}
     >
       {title && (
-        <div className="px-5 py-3 border-b border-[var(--app-card-border)]">
-          <h3 className="text-lg font-medium text-[var(--app-foreground)]">
+        <div className="px-3 sm:px-5 py-2 sm:py-3 border-b border-[var(--app-card-border)]">
+          <h3 className="text-base sm:text-lg font-medium text-[var(--app-foreground)]">
             {title}
           </h3>
         </div>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-3 sm:p-5">{children}</div>
     </div>
   );
 }
@@ -118,30 +118,30 @@ type FeaturesProps = {
 
 export function Features({ setActiveTab }: FeaturesProps) {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <Card title="Key Features">
-        <ul className="space-y-3 mb-4">
+        <ul className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
           <li className="flex items-start">
-            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2" />
-            <span className="text-[var(--app-foreground-muted)]">
+            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2 flex-shrink-0" />
+            <span className="text-[var(--app-foreground-muted)] text-sm sm:text-base">
               Minimalistic and beautiful UI design
             </span>
           </li>
           <li className="flex items-start">
-            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2" />
-            <span className="text-[var(--app-foreground-muted)]">
+            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2 flex-shrink-0" />
+            <span className="text-[var(--app-foreground-muted)] text-sm sm:text-base">
               Responsive layout for all devices
             </span>
           </li>
           <li className="flex items-start">
-            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2" />
-            <span className="text-[var(--app-foreground-muted)]">
+            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2 flex-shrink-0" />
+            <span className="text-[var(--app-foreground-muted)] text-sm sm:text-base">
               Dark mode support
             </span>
           </li>
           <li className="flex items-start">
-            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2" />
-            <span className="text-[var(--app-foreground-muted)]">
+            <Icon name="check" className="text-[var(--app-accent)] mt-1 mr-2 flex-shrink-0" />
+            <span className="text-[var(--app-foreground-muted)] text-sm sm:text-base">
               OnchainKit integration
             </span>
           </li>
@@ -160,20 +160,21 @@ type HomeProps = {
 
 export function Home({ setActiveTab }: HomeProps) {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <Card title="My First Mini App">
-        <p className="text-[var(--app-foreground-muted)] mb-4">
+        <p className="text-[var(--app-foreground-muted)] mb-3 sm:mb-4 text-sm sm:text-base">
           This is a minimalistic Mini App built with OnchainKit components.
         </p>
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2">
           <Button
             onClick={() => setActiveTab("features")}
             icon={<Icon name="arrow-right" size="sm" />}
+            className="w-full sm:w-auto"
           >
             Explore Features
           </Button>
-          <Link href="/profile">
-            <Button variant="secondary">View Profile</Button>
+          <Link href="/profile" className="w-full sm:w-auto">
+            <Button variant="secondary" className="w-full sm:w-auto">View Profile</Button>
           </Link>
         </div>
       </Card>
@@ -328,21 +329,22 @@ function TodoList() {
 
   return (
     <Card title="Get started">
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-2">
           <input
             type="text"
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Add a new task..."
-            className="flex-1 px-3 py-2 bg-[var(--app-card-bg)] border border-[var(--app-card-border)] rounded-lg text-[var(--app-foreground)] placeholder-[var(--app-foreground-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--app-accent)]"
+            className="flex-1 px-3 py-2 bg-[var(--app-card-bg)] border border-[var(--app-card-border)] rounded-lg text-[var(--app-foreground)] placeholder-[var(--app-foreground-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--app-accent)] min-h-[44px]"
           />
           <Button
             variant="primary"
             size="md"
             onClick={addTodo}
             icon={<Icon name="plus" size="sm" />}
+            className="w-full sm:w-auto"
           >
             Add
           </Button>
@@ -351,12 +353,12 @@ function TodoList() {
         <ul className="space-y-2">
           {todos.map((todo) => (
             <li key={todo.id} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-1 min-w-0">
                 <button
                   type="button"
                   id={`todo-${todo.id}`}
                   onClick={() => toggleTodo(todo.id)}
-                  className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
                     todo.completed
                       ? "bg-[var(--app-accent)] border-[var(--app-accent)]"
                       : "border-[var(--app-foreground-muted)] bg-transparent"
@@ -372,7 +374,7 @@ function TodoList() {
                 </button>
                 <label
                   htmlFor={`todo-${todo.id}`}
-                  className={`text-[var(--app-foreground-muted)] cursor-pointer ${todo.completed ? "line-through opacity-70" : ""}`}
+                  className={`text-[var(--app-foreground-muted)] cursor-pointer text-sm sm:text-base truncate ${todo.completed ? "line-through opacity-70" : ""}`}
                 >
                   {todo.text}
                 </label>
@@ -380,7 +382,7 @@ function TodoList() {
               <button
                 type="button"
                 onClick={() => deleteTodo(todo.id)}
-                className="text-[var(--app-foreground-muted)] hover:text-[var(--app-foreground)]"
+                className="text-[var(--app-foreground-muted)] hover:text-[var(--app-foreground)] ml-2 flex-shrink-0 w-6 h-6 flex items-center justify-center"
               >
                 ×
               </button>
@@ -422,8 +424,8 @@ function TransactionCard() {
 
   return (
     <Card title="Make Your First Transaction">
-      <div className="space-y-4">
-        <p className="text-[var(--app-foreground-muted)] mb-4">
+      <div className="space-y-3 sm:space-y-4">
+        <p className="text-[var(--app-foreground-muted)] mb-3 sm:mb-4 text-sm sm:text-base">
           Experience the power of seamless sponsored transactions with{" "}
           <a
             href="https://onchainkit.xyz"
@@ -445,7 +447,7 @@ function TransactionCard() {
                 console.error("Transaction failed:", error)
               }
             >
-              <TransactionButton className="text-white text-md" />
+              <TransactionButton className="text-white text-sm sm:text-md w-full sm:w-auto" />
               <TransactionStatus>
                 <TransactionStatusAction />
                 <TransactionStatusLabel />
@@ -457,7 +459,7 @@ function TransactionCard() {
               </TransactionToast>
             </Transaction>
           ) : (
-            <p className="text-yellow-400 text-sm text-center mt-2">
+            <p className="text-yellow-400 text-xs sm:text-sm text-center mt-2">
               Connect your wallet to send a transaction
             </p>
           )}

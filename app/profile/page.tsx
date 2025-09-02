@@ -10,8 +10,8 @@ export default function ProfilePage() {
   const { context } = useMiniKit();
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 py-3">
-        <ProfileCard usernameToRate={context?.user.username || "tophb"}/>
+    <div className="responsive-container py-2 sm:py-3 safe-area-top safe-area-bottom">
+        <ProfileCard usernameToRate={context?.user.username || "dwr.eth"}/>
        {/*  <ProfileCard usernameToRate="dxfareed"/> */}
         <Leaderboard/>
     </div>

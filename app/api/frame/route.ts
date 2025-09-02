@@ -6,13 +6,12 @@ export async function POST(req: NextRequest) {
     const { untrustedData } = body;
     
     const username = untrustedData?.username || 'dxfareed';
-    const appUrl = process.env.NEXT_PUBLIC_URL || 'https://test-1-sandy-nu.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
     
-    // Redirect to the main website URL, not the API endpoint
     return NextResponse.redirect(new URL(`${appUrl}/profile?username=${username}`));
   } catch (error) {
     console.error('Frame API error:', error);
-    const appUrl = process.env.NEXT_PUBLIC_URL || 'https://test-1-sandy-nu.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
     return NextResponse.redirect(new URL(`${appUrl}/profile`));
   }
 }
@@ -26,8 +25,7 @@ export async function GET(req: NextRequest) {
     const response = await fetch(`${apiUrl}/rate-user`, {
       method: 'POST',
       headers: { 
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ username }),
     });
@@ -50,7 +48,7 @@ export async function GET(req: NextRequest) {
     }
 
     const tier = calculateTier(stat_sheet.total_score);
-    const appUrl = process.env.NEXT_PUBLIC_URL || 'https://test-1-sandy-nu.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
     const frameHtml = `
 <!DOCTYPE html>

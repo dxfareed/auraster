@@ -9,8 +9,7 @@ export async function GET(req: NextRequest) {
     const response = await fetch(`${apiUrl}/rate-user`, {
       method: 'POST',
       headers: { 
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ username }),
     });
@@ -34,7 +33,6 @@ export async function GET(req: NextRequest) {
 
     const tier = calculateTier(stat_sheet.total_score);
 
-    // Generate SVG image
     const svg = `
 <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -77,14 +75,13 @@ export async function GET(req: NextRequest) {
     return new NextResponse(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+        'Cache-Control': 'public, max-age=300', 
       },
     });
 
   } catch (error) {
     console.error('Frame image generation error:', error);
     
-    // Return a fallback image
     const fallbackSvg = `
 <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="630" fill="#000000"/>
