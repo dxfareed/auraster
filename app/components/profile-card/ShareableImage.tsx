@@ -33,24 +33,12 @@ function calculateTier(score: number): string {
 
 export async function generateShareableImage(apiData: ApiResponse): Promise<string> {
   console.log('Generating shareable image with data:', apiData);
-  console.log('Stat sheet:', apiData.stat_sheet);
   
-  // Check if fonts are already loaded, if not load them
-  if (!document.fonts.check('12px Bangers')) {
-    try {
-      await loadFont('Bangers', '/fonts/bangers.ttf');
-    } catch (error) {
-      console.warn('Bangers font loading failed, using fallback:', error);
-    }
-  }
-  
-  if (!document.fonts.check('12px VT323')) {
-    try {
-      await loadFont('VT323', '/fonts/vt323.ttf');
-    } catch (error) {
-      console.warn('VT323 font loading failed, using fallback:', error);
-    }
-  }
+  // Load fonts
+  await Promise.all([
+    loadFont('Bangers', '/fonts/bangers.ttf'),
+    loadFont('VT323', '/fonts/vt323.ttf')
+  ]);
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -59,8 +47,8 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
     throw new Error('Could not get canvas context');
   }
 
-  const width = 540; 
-  const height = 960;
+  const width = 800;
+  const height = 1000; // Increased height for better spacing
   canvas.width = width;
   canvas.height = height;
 
@@ -70,29 +58,34 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
 
   const { stat_sheet, profile_data } = apiData;
   
-  // Validate data structure
   if (!stat_sheet || !profile_data) {
     console.error('Missing required data:', { stat_sheet, profile_data });
     throw new Error('Missing required data for image generation');
   }
 
-  // Card border
+  // Card border with enhanced styling
   const cardX = 20;
   const cardY = 20;
   const cardWidth = width - 40;
   const cardHeight = height - 40;
   
+  // Enhanced shadow effect
+  ctx.shadowColor = 'rgba(255, 77, 77, 0.8)';
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  
   ctx.strokeStyle = '#ff4d4d';
   ctx.lineWidth = 4;
   ctx.strokeRect(cardX, cardY, cardWidth, cardHeight);
   
-  ctx.shadowColor = 'rgba(255, 77, 77, 0.7)';
-  ctx.shadowBlur = 10;
-  ctx.strokeRect(cardX, cardY, cardWidth, cardHeight);
+  // Reset shadow for other elements
   ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
 
-  // Banner
-  const bannerHeight = 150;
+  // Banner - using 3:1 ratio like Twitter
+  const bannerHeight = Math.round(cardWidth / 3); // 3:1 aspect ratio
   //@ts-expect-error - profile_data structure may vary
   const userBannerUrl = profile_data.profile?.banner?.url;
   //@ts-expect-error - power_badge property may not exist
@@ -104,15 +97,9 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
     ctx.drawImage(bannerImg, cardX, cardY, cardWidth, bannerHeight);
   } catch (error) {
     console.warn('Failed to load banner image, using gradient fallback:', error);
-    // Fallback gradient
     const gradient = ctx.createLinearGradient(cardX, cardY, cardX, cardY + bannerHeight);
-    if (isProUser) {
-      gradient.addColorStop(0, '#8a63d2');
-      gradient.addColorStop(1, '#ff4d4d');
-    } else {
-      gradient.addColorStop(0, '#333333');
-      gradient.addColorStop(1, '#666666');
-    }
+    gradient.addColorStop(0, isProUser ? '#8a63d2' : '#333333');
+    gradient.addColorStop(1, isProUser ? '#ff4d4d' : '#666666');
     ctx.fillStyle = gradient;
     ctx.fillRect(cardX, cardY, cardWidth, bannerHeight);
   }
@@ -121,29 +108,44 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
   ctx.lineWidth = 2;
   ctx.strokeRect(cardX, cardY, cardWidth, bannerHeight);
 
-  // Header logo
-  try {
-    const logoImg = await loadImage('/info-banner.png');
-    ctx.save();
-    ctx.translate(cardX + 50, cardY + 30);
-    ctx.rotate(-5 * Math.PI / 180);
-    ctx.drawImage(logoImg, 0, 0, 150, 50);
-    ctx.restore();
-  } catch (error) {
-    console.warn("Failed to load logo, using text fallback:", error);
-    ctx.save();
-    ctx.translate(cardX + 50, cardY + 30);
-    ctx.rotate(-5 * Math.PI / 180);
-    ctx.fillStyle = '#ff4d4d';
-    ctx.font = 'bold 24px Arial, sans-serif';
-    ctx.fillText('AURASTER', 0, 20);
-    ctx.restore();
-  }
+  // Header logo - positioned at top left
+  ctx.save();
+  ctx.translate(cardX + 20, cardY + 20);
+  ctx.rotate(-5 * Math.PI / 180);
 
-  // Total grade sticker
-  const gradeSize = 80;
-  const gradeX = cardX + cardWidth - 50;
-  const gradeY = cardY + 40;
+  // Shadow for "AURASTER"
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetX = 5;
+  ctx.shadowOffsetY = 5;
+
+  // "AURASTER" text - top left positioning
+  ctx.font = '60px Bangers'; // Slightly smaller for top left
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 6;
+  ctx.strokeText('AURASTER', 0, 0);
+  ctx.fillStyle = '#ff4d4d';
+  ctx.fillText('AURASTER', 0, 0);
+
+  // Reset shadow
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  // "THE AURA DOCTOR" subtitle - commented out
+  // ctx.fillStyle = '#000000';
+  // ctx.font = '16px "Courier New", monospace';
+  // ctx.fillText('THE AURA DOCTOR', 0, 70);
+
+  ctx.restore();
+
+  // Total grade sticker - pushed by 20px
+  const gradeSize = 100;
+  const gradeX = cardX + cardWidth - 60; // Pushed 20px to the left
+  const gradeY = cardY + Math.round(bannerHeight / 1.1);
   
   ctx.save();
   ctx.translate(gradeX, gradeY);
@@ -155,91 +157,96 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
   ctx.fill();
   
   ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 4;
   ctx.stroke();
   
   ctx.fillStyle = 'red';
-  ctx.font = '40px Bangers';
+  ctx.font = '50px Bangers';
   ctx.textAlign = 'center';
-  ctx.fillText(calculateTier(stat_sheet.total_score), 0, 15);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(calculateTier(stat_sheet.total_score), 0, 5);
   
   ctx.fillStyle = '#000000';
-  ctx.font = '14px VT323';
+  ctx.font = '18px VT323';
   ctx.fillText('TOTAL', 0, 35);
   ctx.restore();
 
-  // Card body - adjust positioning to ensure content is visible
-  const bodyX = cardX + 20;
-  const bodyY = cardY + bannerHeight + 40; // Increased spacing
+  // Card body - better spacing with increased height
+  const bodyX = cardX + 30;
+  const bodyY = cardY + bannerHeight + 40; // More space after banner
 
   // Analysis header
   ctx.fillStyle = '#ffffff';
-  ctx.font = '16px monospace';
+  ctx.font = '22px monospace';
   ctx.textAlign = 'center';
   
   const pfpUrl = profile_data.pfp_url;
-  const pfpSize = 28;
-  const textY = bodyY + 15;
+  const pfpSize = 32;
   const text = `aura analysis for @${profile_data.username}`;
   const textWidth = ctx.measureText(text).width;
-  const textX = (width / 2) + (pfpSize / 2) + 5;
+  const textX = (width / 2);
 
   try {
     const pfpImg = await loadImage(pfpUrl);
     const pfpX = textX - (textWidth / 2) - pfpSize - 10;
-    ctx.save(); // Save context before clipping
+    
+    // Draw round PFP using clipping
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(pfpX + pfpSize / 2, textY - pfpSize / 2 + 2, pfpSize / 2, 0, 2 * Math.PI);
+    ctx.arc(pfpX + pfpSize / 2, bodyY + pfpSize / 2, pfpSize / 2, 0, 2 * Math.PI);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(pfpImg, pfpX, textY - pfpSize, pfpSize, pfpSize);
-    ctx.restore(); // Restore context after clipping
+    ctx.drawImage(pfpImg, pfpX, bodyY, pfpSize, pfpSize);
+    ctx.restore();
   } catch (error) {
     console.warn("Failed to load PFP, continuing without it:", error);
   }
   
-  ctx.fillText(text, textX, textY);
+  ctx.fillText(text, textX, bodyY + pfpSize / 2 + 5);
 
-  // Add background to card body to ensure visibility
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-  ctx.fillRect(bodyX, bodyY, cardWidth - 40, cardHeight - bannerHeight - 40);
-
-  // Test text rendering
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '16px Arial';
-  ctx.fillText('Test: Text should be visible', bodyX, bodyY + 50);
-
-  // Summary stats - adjust positioning
-  const statsY = bodyY + 80; // Increased spacing
+    // Summary stats with enhanced styling
+  const statsY = bodyY + 60;
+  const statBoxWidth = (cardWidth - 80) / 2;
+  const statBoxHeight = 50;
   
-  // Rank box
-  ctx.fillStyle = '#ff4d4d';
-  ctx.fillRect(bodyX, statsY, 220, 40);
+  // Rank box with gradient and shadow
+  const rankGradient = ctx.createLinearGradient(bodyX, statsY, bodyX, statsY + statBoxHeight);
+  rankGradient.addColorStop(0, '#ff4d4d');
+  rankGradient.addColorStop(1, '#e63939');
+  
+  ctx.fillStyle = rankGradient;
+  ctx.fillRect(bodyX, statsY, statBoxWidth, statBoxHeight);
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2;
-  ctx.strokeRect(bodyX, statsY, 220, 40);
+  ctx.strokeRect(bodyX, statsY, statBoxWidth, statBoxHeight);
   
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px Arial, sans-serif';
+  ctx.font = 'bold 28px VT323';
   ctx.textAlign = 'center';
-  ctx.fillText(`RANK ${stat_sheet.rank || 'N/A'}`, bodyX + 110, statsY + 28);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`RANK ${stat_sheet.rank || 'N/A'}`, bodyX + statBoxWidth / 2, statsY + statBoxHeight / 2);
 
-  // Points box
-  ctx.fillStyle = '#8a63d2';
-  ctx.fillRect(bodyX + 240, statsY, 220, 40);
+  // Points box with gradient and shadow
+  const pointsX = bodyX + statBoxWidth + 20;
+  const pointsGradient = ctx.createLinearGradient(pointsX, statsY, pointsX, statsY + statBoxHeight);
+  pointsGradient.addColorStop(0, '#8a63d2');
+  pointsGradient.addColorStop(1, '#7a53c2');
+  
+  ctx.fillStyle = pointsGradient;
+  ctx.fillRect(pointsX, statsY, statBoxWidth, statBoxHeight);
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2;
-  ctx.strokeRect(bodyX + 240, statsY, 220, 40);
+  ctx.strokeRect(pointsX, statsY, statBoxWidth, statBoxHeight);
   
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px Arial, sans-serif';
+  ctx.font = 'bold 28px VT323';
   ctx.textAlign = 'center';
-  ctx.fillText(`${stat_sheet.total_score || 0} AURA POINTS`, bodyX + 350, statsY + 28);
+  ctx.fillText(`${stat_sheet.total_score || 0} AURA PTS`, pointsX + statBoxWidth / 2, statsY + statBoxHeight / 2);
 
-  // Detailed stats - adjust positioning and spacing
-  const detailedStatsY = statsY + 100; // Increased spacing
-  const statHeight = 40; // Reduced height
-  const statGap = 15; // Reduced gap
+  // Detailed stats - better spacing with increased height
+  const detailedStatsY = statsY + statBoxHeight + 50; // More space after summary stats
+  const statHeight = 70; // Taller stat rows
+  const statGap = 25; // More gap between stats
   
   const stats = [
     { name: 'name', percentage: stat_sheet.stats?.name?.percentage || 0, tier: stat_sheet.stats?.name?.tier || 'F' },
@@ -253,63 +260,118 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
     
     // Stat name
     ctx.fillStyle = '#ffffff';
-    ctx.font = '14px "Courier New", monospace';
+    ctx.font = '20px "Courier New", monospace';
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
     ctx.fillText(stat.name, bodyX, y);
     
-    // Stat tier
+    // Stat bar with enhanced styling
+    const barY = y + 30;
+    const barWidth = cardWidth - 60;
+    const barHeight = 30;
+    
+    // Stat tier - positioned exactly at end of progress bar
+    ctx.font = 'bold 24px VT323';
+    const tierText = stat.tier;
+    const tierTextWidth = ctx.measureText(tierText).width;
+    const tierBoxPadding = 30; // Padding for breathing room
+    const tierBoxWidth = Math.max(tierTextWidth + tierBoxPadding, 100);
+    const tierBoxHeight = 35;
+    const tierX = bodyX + barWidth - tierBoxWidth; // Align with end of progress bar
+    
     ctx.fillStyle = '#ff4d4d';
-    ctx.fillRect(bodyX + cardWidth - 120, y - 15, 60, 30);
+    ctx.fillRect(tierX, y - 5, tierBoxWidth, tierBoxHeight);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(bodyX + cardWidth - 120, y - 15, 60, 30);
+    ctx.strokeRect(tierX, y - 5, tierBoxWidth, tierBoxHeight);
     
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(stat.tier, bodyX + cardWidth - 90, y + 8);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tierText, tierX + tierBoxWidth / 2, y - 5 + tierBoxHeight / 2);
     
-    // Stat bar
-    const barY = y + 15;
-    const barWidth = cardWidth - 80;
-    ctx.fillStyle = '#333333';
-    ctx.fillRect(bodyX, barY, barWidth, 25);
+    // Background bar with subtle gradient
+    const barBgGradient = ctx.createLinearGradient(bodyX, barY, bodyX, barY + barHeight);
+    barBgGradient.addColorStop(0, '#2a2a2a');
+    barBgGradient.addColorStop(1, '#1a1a1a');
+    
+    ctx.fillStyle = barBgGradient;
+    ctx.fillRect(bodyX, barY, barWidth, barHeight);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(bodyX, barY, barWidth, 25);
+    ctx.strokeRect(bodyX, barY, barWidth, barHeight);
     
+    // Progress bar with gradient
     const progressWidth = (barWidth * stat.percentage) / 100;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(bodyX, barY, progressWidth, 25);
+    const progressGradient = ctx.createLinearGradient(bodyX, barY, bodyX, barY + barHeight);
+    progressGradient.addColorStop(0, '#ffffff');
+    progressGradient.addColorStop(1, '#f0f0f0');
     
+    ctx.fillStyle = progressGradient;
+    ctx.fillRect(bodyX, barY, progressWidth, barHeight);
+    
+    // Percentage text with better styling
     ctx.fillStyle = '#ad95d8';
-    ctx.font = '13px "Courier New", monospace';
+    ctx.font = 'bold 18px "Courier New", monospace';
     ctx.textAlign = 'right';
-    ctx.fillText(`${stat.percentage}%`, bodyX + barWidth - 10, barY + 18);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${stat.percentage}%`, bodyX + barWidth - 10, barY + barHeight / 2);
   });
 
-  // Overall aura - adjust positioning
-  const overallY = detailedStatsY + (statHeight + statGap) * 4 + 40;
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '18px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('overall you have', width / 2, overallY);
+  // Overall aura - on same line
+  const overallY = detailedStatsY + (statHeight + statGap) * 4 - 10;
   
-  ctx.fillStyle = '#ff4d4d';
-  ctx.fillRect(width / 2 - 100, overallY + 15, 200, 40);
+  // Text and box on same line
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '22px monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('overall you have', width / 2 - 20, overallY + 35);
+  
+  // Calculate dynamic width for overall aura box - bigger and more visible
+  ctx.font = 'bold 32px VT323'; // Larger font
+  const overallText = stat_sheet.overall_aura || 'N/A';
+  const overallTextWidth = ctx.measureText(overallText).width;
+  const overallBoxPadding = 60; // More padding for bigger box
+  const overallBoxWidth = Math.max(overallTextWidth + overallBoxPadding, 270); // Increased minimum width
+  const overallBoxHeight = 60; // Taller box
+  
+  // Enhanced overall aura box with gradient and shadow
+  const overallBoxX = width / 2 + 20;
+  const overallBoxY = overallY + 10;
+  
+  // Add subtle shadow effect
+  ctx.shadowColor = 'rgba(255, 77, 77, 0.5)';
+  ctx.shadowBlur = 15;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 5;
+  
+  // Create gradient for the box
+  const overallGradient = ctx.createLinearGradient(overallBoxX, overallBoxY, overallBoxX, overallBoxY + overallBoxHeight);
+  overallGradient.addColorStop(0, '#ff4d4d');
+  overallGradient.addColorStop(1, '#e63939');
+  
+  ctx.fillStyle = overallGradient;
+  ctx.fillRect(overallBoxX, overallBoxY, overallBoxWidth, overallBoxHeight);
+  
+  // Reset shadow for border
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  
   ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(width / 2 - 100, overallY + 15, 200, 40);
+  ctx.lineWidth = 3; // Thicker border
+  ctx.strokeRect(overallBoxX, overallBoxY, overallBoxWidth, overallBoxHeight);
   
+  // Text with better positioning
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px Arial, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(stat_sheet.overall_aura || 'N/A', width / 2, overallY + 43);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(overallText, overallBoxX + overallBoxWidth / 2, overallBoxY + overallBoxHeight / 2);
 
-  // Footer - adjust positioning
-  const footerY = height - 80;
-  ctx.fillStyle = '#a0a0a0';
-  ctx.font = '14px monospace';
+  // Footer with enhanced styling and positioning
+  const footerY = height - 60; // Perfect spacing from bottom
+  ctx.fillStyle = '#ffffff'; // Brighter white for better visibility
+  ctx.font = 'bold 20px monospace'; // Larger, bold font
   ctx.textAlign = 'center';
   
   const footerText = "auraster by dxfareed";
@@ -319,17 +381,35 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
   try {
     const author_url_pfp = "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/8fbbe5e2-0c53-48b8-c5f1-4a791b76ce00/rectcrop3";
     const authorPfp = await loadImage(author_url_pfp);
-    const authorPfpSize = 20;
-    const authorPfpX = footerTextX - (footerTextWidth / 2) - authorPfpSize - 5;
-    ctx.drawImage(authorPfp, authorPfpX, footerY - 15, authorPfpSize, authorPfpSize);
+    const authorPfpSize = 28; // Slightly larger PFP
+    const authorPfpX = footerTextX - (footerTextWidth / 2) - authorPfpSize - 12; // Better spacing
+    
+    // Draw round PFP using clipping with subtle border
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(authorPfpX + authorPfpSize / 2, footerY - 20 + authorPfpSize / 2, authorPfpSize / 2, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(authorPfp, authorPfpX, footerY - 20, authorPfpSize, authorPfpSize);
+    ctx.restore();
+    
+    // Add subtle white border around PFP
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(authorPfpX + authorPfpSize / 2, footerY - 20 + authorPfpSize / 2, authorPfpSize / 2 + 1, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
   } catch(error) {
     console.warn("Failed to load author PFP, continuing without it:", error);
   }
 
+  // Draw footer text
   ctx.fillText(footerText, footerTextX, footerY);
 
   try {
-  return canvas.toDataURL('image/png', 0.9);
+    return canvas.toDataURL('image/png', 0.95);
   } catch (error) {
     console.warn('Canvas export failed, trying without external images:', error);
     
@@ -355,21 +435,21 @@ export async function generateShareableImage(apiData: ApiResponse): Promise<stri
     
     // Simple text content with stats
     fallbackCtx.fillStyle = '#ffffff';
-    fallbackCtx.font = 'bold 24px Arial, sans-serif';
+    fallbackCtx.font = 'bold 36px Arial, sans-serif';
     fallbackCtx.textAlign = 'center';
-    fallbackCtx.fillText(`Auraster - @${profile_data.username}`, width / 2, height / 2 - 40);
+    fallbackCtx.fillText(`Auraster - @${profile_data.username}`, width / 2, height / 2 - 60);
     
     fallbackCtx.fillStyle = '#ff4d4d';
-    fallbackCtx.font = 'bold 48px Arial, sans-serif';
+    fallbackCtx.font = 'bold 72px Arial, sans-serif';
     fallbackCtx.fillText(calculateTier(stat_sheet.total_score || 0), width / 2, height / 2);
     
     fallbackCtx.fillStyle = '#ffffff';
-    fallbackCtx.font = '16px Arial, sans-serif';
-    fallbackCtx.fillText(`Score: ${stat_sheet.total_score || 0} | Rank: ${stat_sheet.rank || 'N/A'}`, width / 2, height / 2 + 40);
+    fallbackCtx.font = '24px Arial, sans-serif';
+    fallbackCtx.fillText(`Score: ${stat_sheet.total_score || 0} | Rank: ${stat_sheet.rank || 'N/A'}`, width / 2, height / 2 + 60);
     
     fallbackCtx.fillStyle = '#a0a0a0';
-    fallbackCtx.font = '14px Arial, sans-serif';
-    fallbackCtx.fillText('Check your aura at Auraster!', width / 2, height / 2 + 80);
+    fallbackCtx.font = '20px Arial, sans-serif';
+    fallbackCtx.fillText('Check your aura at Auraster!', width / 2, height / 2 + 120);
     
     return fallbackCanvas.toDataURL('image/png', 0.9);
   }

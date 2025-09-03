@@ -103,8 +103,10 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
             const formData = new FormData();
             formData.append('image', blob, `auraster-${profile_data.username}.png`);
           
-           const imgbbKey = process.env.IMGBB_KEY;
+           const imgbbKey = process.env.NEXT_PUBLIC_IMGBB_KEY;
            const imgbbURL = `https://api.imgbb.com/1/upload?key=${imgbbKey}`;
+
+           console.info(imgbbURL, " imggbURL")
             const uploadResponse = await fetch(imgbbURL, {
               method: 'POST',
               body: formData
@@ -175,6 +177,15 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
         
         if (onProfileLoad) {
           onProfileLoad();
+        }
+        
+        try {
+          if (typeof sdk !== 'undefined' && sdk.actions) {
+            await sdk.actions.ready();
+            console.log('Farcaster app ready signal sent');
+          }
+        } catch (readyError) {
+          console.warn('Failed to send ready signal:', readyError);
         }
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch rating.";
@@ -303,7 +314,13 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
                 <p className="version-text">
                   auraster by 
                   <img src="https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/8fbbe5e2-0c53-48b8-c5f1-4a791b76ce00/rectcrop3" alt="PFP" className="version-pfp" />
-                  <a href="https://farcaster.xyz" target="_blank" rel="noopener noreferrer" className="author-link">dxfareed</a>
+                  {/* <a href="https://farcaster.xyz" target="_blank" rel="noopener noreferrer" className="author-link">dxfareed</a> */}
+                  <span className="author-link" onClick={async ()=>{
+                   await sdk.actions.viewProfile({ 
+                      fid: 849768
+                      //dxfareed fid
+                    })
+                  }}>dxfareed</span>
                 </p>
               </div>
             </div>
