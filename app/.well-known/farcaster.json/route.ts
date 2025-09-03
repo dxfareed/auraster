@@ -13,7 +13,7 @@ function withValidProperties(
 
 export async function GET() {
   const URL = process.env.NEXT_PUBLIC_URL;
-
+  const allowedAddresses = process.env.NEXT_PUBLIC_ALLOWED_ADDRESSES;
   return Response.json({
     accountAssociation: {
       header: process.env.FARCASTER_HEADER,
@@ -30,14 +30,19 @@ export async function GET() {
       splashImageUrl: process.env.NEXT_PUBLIC_APP_SPLASH_IMAGE,
       splashBackgroundColor: process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR,
       homeUrl: URL,
+      imageUrl: process.env.NEXT_PUBLIC_APP_OG_IMAGE,
       webhookUrl: `${URL}/api/webhook`,
       primaryCategory: process.env.NEXT_PUBLIC_APP_PRIMARY_CATEGORY,
-      tags: [],
+      tags: ["social", "aura", "farcaster", "analysis", "profile", "friends", "feed"],
       heroImageUrl: process.env.NEXT_PUBLIC_APP_HERO_IMAGE,
       tagline: process.env.NEXT_PUBLIC_APP_TAGLINE,
       ogTitle: process.env.NEXT_PUBLIC_APP_OG_TITLE,
       ogDescription: process.env.NEXT_PUBLIC_APP_OG_DESCRIPTION,
       ogImageUrl: process.env.NEXT_PUBLIC_APP_OG_IMAGE,
+      castShareUrl: URL,
     }),
+    baseBuilder: {
+      "allowedAddresses": [allowedAddresses]
+      },
   });
 }
