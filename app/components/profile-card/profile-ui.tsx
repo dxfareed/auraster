@@ -89,12 +89,20 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
 
       try {
         if (typeof sdk !== 'undefined' && sdk.actions) {
-          const castText = `Just analyzed @${profile_data.username}'s Farcaster aura! 🎯\n\n` +
+          /* const castText = `Just analyzed @${profile_data.username}'s Farcaster aura! 🎯\n\n` +
                           `Grade: ${calculateTier(stat_sheet.total_score)}\n` +
                           `Score: ${stat_sheet.total_score} points\n` +
                           `Rank: #${stat_sheet.rank}\n\n` +
                           `Check your own aura at Auraster! 🔮\n` +
-                          `${appUrl}`;
+                          `${appUrl}`; */
+
+            const castText = `i just analyzed my farcaster aura on Auraster,\n` +
+            `grade: ${calculateTier(stat_sheet.total_score)}\n` +
+            `aura points: ${stat_sheet.total_score}\n` +
+            `current rank: ${stat_sheet.rank}\n\n` +
+            `check your own aura\n` +
+            `${appUrl}`;
+            
           let imageUrl = null;
           try {
             const response = await fetch(imageDataUrl);

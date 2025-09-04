@@ -5,29 +5,17 @@ import {
   useAddFrame,
   useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import {
-  Name,
-  Identity,
-  Address,
-  Avatar,
-  EthBalance,
-} from "@coinbase/onchainkit/identity";
-import {
-  ConnectWallet,
-  Wallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
-} from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
-import { Home } from "./components/DemoComponents";
-import { Features } from "./components/DemoComponents";
+import { Leaderboard } from "./components/Leaderboard";
+import { ProfileCard } from "./components/profile-card/profile-ui";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState("home");
+  const [isLeaderboardReady, setIsLeaderboardReady] = useState(false);
+  const [isPageReady, setIsPageReady] = useState(false);
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
@@ -37,6 +25,17 @@ export default function App() {
       setFrameReady();
     }
   }, [setFrameReady, isFrameReady]);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLeaderboardReady(true);
+      setTimeout(() => {
+        setIsPageReady(true);
+      }, 800);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleAddFrame = useCallback(async () => {
     const frameAdded = await addFrame();
@@ -45,7 +44,7 @@ export default function App() {
 
   const saveFrameButton = useMemo(() => {
     
-    if (context && !context.client.added) {
+      if (context && !context.client.added) {
       return (
         <Button
           variant="ghost"
@@ -60,7 +59,7 @@ export default function App() {
       );
     }
 
-    if (frameAdded) {
+      if (frameAdded) {
       return (
         <div className="flex items-center space-x-1 text-xs sm:text-sm font-medium text-[#0052FF] animate-fade-out">
           <Icon name="check" size="sm" className="text-[#0052FF]" />
@@ -76,31 +75,39 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)] safe-area-top safe-area-bottom">
       <div className="responsive-container py-2 sm:py-3">
-        <header className="flex justify-between items-center mb-2 sm:mb-3 h-10 sm:h-11">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-1 sm:space-x-2">
-              <Wallet className="z-10">
-                <ConnectWallet>
-                  <Name className="text-inherit text-sm sm:text-base truncate" />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-3 sm:px-4 pt-2 sm:pt-3 pb-1 sm:pb-2" hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
-            </div>
-          </div>
-          <div className="flex-shrink-0 ml-2">{saveFrameButton}</div>
-        </header>
-
         <main className="flex-1">
-          {activeTab === "home" && <Home setActiveTab={setActiveTab} />}
-          {activeTab === "features" && <Features setActiveTab={setActiveTab} />}
+          {!isPageReady && (
+            <div className="fixed inset-0 bg-[var(--app-background)] flex flex-col items-center justify-center z-50">
+              {/* Logo Splash */}
+              <div className={`text-center transition-all duration-1000 ease-out ${isLeaderboardReady ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
+                <img 
+                  src="/auraster-logo.png" 
+                  alt="Auraster" 
+                  className="w-60 h-58 mx-auto mb-6 animate-pulse-slow"
+                />
+                <p className="text-lg text-[var(--app-foreground-muted)]">
+                  the aura doctor
+                </p>
+              </div>
+            </div>
+          )}
+
+          {isPageReady && (
+            <div className="animate-fade-in-up">
+              {/* Save Frame Button */}
+              <div className="flex justify-end mb-4">
+                {saveFrameButton}
+              </div>
+              
+              <div className="space-y-6">
+                {/* Profile Card */}
+                <ProfileCard usernameToRate={context?.user.username || "to"} />
+                
+                {/* Leaderboard */}
+                <Leaderboard />
+              </div>
+            </div>
+          )}
         </main>
 
         <footer className="mt-2 sm:mt-2 pt-3 sm:pt-4 flex justify-center">
@@ -110,8 +117,7 @@ export default function App() {
             className="text-[var(--ock-text-foreground-muted)] text-xs"
             onClick={() => openUrl("https://base.org/builders/minikit")}
           >
-            <span className="hidden sm:inline">Built on Base with MiniKit</span>
-            <span className="sm:hidden">Built on Base</span>
+            <span className="sm:hidden">built with base minikit</span>
           </Button>
         </footer>
       </div>
