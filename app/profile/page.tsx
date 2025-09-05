@@ -11,7 +11,7 @@ export default function ProfilePage() {
 
   return (
     <div className="responsive-container py-2 sm:py-3 safe-area-top safe-area-bottom">
-        <ProfileCard usernameToRate={context?.user.username || "dxfareed"}/>
+        <ProfileCard usernameToRate={context?.user.username || "to"}/>
        {/*  <ProfileCard usernameToRate="dxfareed"/> */}
         <Leaderboard/>
     </div>
