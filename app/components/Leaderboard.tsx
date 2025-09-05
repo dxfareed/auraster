@@ -90,7 +90,8 @@ export function Leaderboard() {
         
         const responseText = await response.text();
         const data = JSON.parse(responseText);
-        const top10Data = data.slice(0, 10);
+        const top10Data = data.slice(0, 20);
+        console.log(top10Data);
         setLeaderboardData(top10Data);
         
         preloadProfilePictures(top10Data);
@@ -110,7 +111,7 @@ export function Leaderboard() {
     return (
       <div className="leaderboard-widget">
         <div className="widget-header">
-          <span className="blink-text">■</span> TOP 10 AURAS
+          <span className="blink-text">■</span> LEGENDS
         </div>
         <div className="leaderboard-list">
           {[...Array(5)].map((_, i) => (

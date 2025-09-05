@@ -253,8 +253,8 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
   if (!profile_data) { return <div>Profile data not available.</div>; }
   //@ts-expect-error - profile_data structure may vary
   const userBannerUrl = profile_data.profile?.banner?.url;
-  //@ts-expect-error - power_badge property may not exist
-  const isProUser = profile_data.power_badge !== false;
+  //@ts-expect-error - pro status property may not exist
+  const isProUser = profile_data.pro?.status === 'subscribed';
 
   const bannerToShow = userBannerUrl 
     ? userBannerUrl 

@@ -111,14 +111,14 @@ export default function App() {
         </main>
 
         <footer className="mt-2 sm:mt-2 pt-3 sm:pt-4 flex justify-center">
-          <Button
+        { isLeaderboardReady && <Button
             variant="ghost"
             size="sm"
             className="text-[var(--ock-text-foreground-muted)] text-xs"
             onClick={() => openUrl("https://base.org/builders/minikit")}
           >
-            <span className="sm:hidden">built with base minikit</span>
-          </Button>
+            <span className="sm:hidden">goo goo gaga with minikit</span>
+          </Button>}
         </footer>
       </div>
     </div>

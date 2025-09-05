@@ -4,7 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+
+
+
+
+.custom-dark {
   --app-background: #111111;
   --app-foreground: #ffffff;
   --app-foreground-muted: #c8c8d1;
@@ -18,7 +22,36 @@
   --app-card-border: rgba(115, 115, 115, 0.5);
 }
 
-.mini-app-theme {
+.custom-dark {
+  --app-background: #111111;
+  --app-foreground: #ffffff;
+  --app-foreground-muted: #c8c8d1;
+  --app-accent: #0052ff;
+  --app-accent-hover: #0047e1;
+  --app-accent-active: #003db8;
+  --app-accent-light: #1e293b;
+  --app-gray: #1e1e1e;
+  --app-gray-dark: #2e2e2e;
+  --app-card-bg: rgba(17, 17, 17, 0.4);
+  --app-card-border: rgba(115, 115, 115, 0.5);
+}
+
+.custom-light {
+  --app-background: #ffffff;
+  --app-foreground: #111111;
+  --app-foreground-muted: #5a5a5a;
+  --app-accent: #0052ff;
+  --app-accent-hover: #0047e1;
+  --app-accent-active: #003db8;
+  --app-accent-light: #e0e8f9;
+  --app-gray: #f0f0f0;
+  --app-gray-dark: #e0e0e0;
+  --app-card-bg: rgba(255, 255, 255, 0.4);
+  --app-card-border: rgba(0, 0, 0, 0.1);
+}
+
+.custom-dark,
+.custom-light {
   --ock-font-family: "Geist", sans-serif;
   --ock-border-radius: 0.75rem;
   --ock-border-radius-inner: 0.5rem;
@@ -41,8 +74,8 @@
   --ock-bg-alternate-hover: var(--app-gray-dark);
   --ock-bg-alternate-active: var(--app-gray-dark);
   --ock-bg-inverse: var(--app-foreground);
-  --ock-bg-inverse-hover: #2a2a2a;
-  --ock-bg-inverse-active: #3a3a3a;
+  --ock-bg-inverse-hover: #f0f0f0;
+  --ock-bg-inverse-active: #e0e0e0;
   --ock-bg-primary: var(--app-accent);
   --ock-bg-primary-hover: var(--app-accent-hover);
   --ock-bg-primary-active: var(--app-accent-active);
@@ -77,8 +110,8 @@
 }
 
 body {
-  color: var(--app-foreground);
-  background: var(--app-background);
+  color: var(--ock-text-foreground);
+  background: var(--ock-bg-default);
   font-family: var(--font-geist-sans), sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
