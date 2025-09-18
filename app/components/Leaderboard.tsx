@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import './Leaderboard.css';
 import { API_URLS } from "@/lib/api-config";
+import { ScoreModal } from './profile-card/ScoreModal';
 
 const preloadProfilePictures = (data: LeaderboardEntry[]) => {
   data.forEach(user => {
@@ -50,7 +51,6 @@ const ProfilePicture = ({ src, alt, username, onLoad }: {
           <div className="skeleton-circle"></div>
         </div>
       )}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img 
         src={src} 
         alt={alt} 
@@ -69,14 +69,16 @@ interface LeaderboardEntry {
   display_name: string;
   pfp_url: string;
   total_score: number;
+  fid: number;
+  raw_breakdown: { [key: string]: number };
 }
 
 export function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [selectedUser, setSelectedUser] = useState<LeaderboardEntry | null>(null);
+
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
@@ -90,7 +92,7 @@ export function Leaderboard() {
         
         const responseText = await response.text();
         const data = JSON.parse(responseText);
-        const top10Data = data.slice(0, 20);
+        const top10Data = data.slice(0, 100);
         console.log(top10Data);
         setLeaderboardData(top10Data);
         
@@ -107,6 +109,14 @@ export function Leaderboard() {
     fetchLeaderboard();
   }, []);
 
+  const handleUserClick = (user: LeaderboardEntry) => {
+    setSelectedUser(user);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedUser(null);
+  };
+
   if (isLoading) {
     return (
       <div className="leaderboard-widget">
@@ -114,46 +124,58 @@ export function Leaderboard() {
           <span className="blink-text">■</span> LEGENDS
         </div>
         <div className="leaderboard-list">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="skeleton-row">
-              <div className="skeleton rank"></div>
-              <div className="skeleton pfp"></div>
-              <div className="skeleton-user-info">
-                <div className="skeleton name"></div>
-                <div className="skeleton username"></div>
-              </div>
-              <div className="skeleton score"></div>
-            </div>
-          ))}
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <div className="loading-text">Loading legends...</div>
+          </div>
         </div>
       </div>
     );
   }
+  
   if (error) return <div className="leaderboard-widget"><p>Error: {error}</p></div>;
 
   return (
-    <div className="leaderboard-widget">
-      <div className="widget-header">
-        <strong>LEGENDS</strong>
+    <>
+      <div className="leaderboard-widget">
+        <div className="widget-header">
+          <strong>LEGENDS</strong>
+        </div>
+        <ol className="leaderboard-list">
+          {leaderboardData.map(user => (
+            <li 
+              key={user.rank} 
+              className="leaderboard-row clickable-row"
+              onClick={() => handleUserClick(user)}
+            >
+              <span className="rank">{user.rank}</span>
+              <ProfilePicture 
+                src={user.pfp_url} 
+                alt={user.username} 
+                username={user.username}
+                onLoad={() => {}}
+              />
+              <div className="user-info">
+                <div className="name-container">
+                  <span className="display-name">{user.display_name}</span>
+                  {user.rank === 1 && (
+                    <span className="mr-farcaster-badge">Mr Farcaster</span>
+                  )}
+                </div>
+                <span className="username">@{user.username}</span>
+              </div>
+              <span className="score">{Math.round(user.total_score)}</span>
+            </li>
+          ))}
+        </ol>
       </div>
-      <ol className="leaderboard-list">
-        {leaderboardData.map(user => (
-          <li key={user.rank} className="leaderboard-row">
-            <span className="rank">{user.rank}</span>
-            <ProfilePicture 
-              src={user.pfp_url} 
-              alt={user.username} 
-              username={user.username}
-              onLoad={() => setLoadedImages(prev => new Set(prev).add(user.pfp_url))}
-            />
-            <div className="user-info">
-              <span className="display-name">{user.display_name}</span>
-              <span className="username">@{user.username}</span>
-            </div>
-            <span className="score">{Math.round(user.total_score)}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
+
+      {selectedUser && (
+        <ScoreModal 
+          breakdown={selectedUser.raw_breakdown} 
+          onClose={handleCloseModal} 
+        />
+      )}
+    </>
   );
 }

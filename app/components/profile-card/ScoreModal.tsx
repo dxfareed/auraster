@@ -1,5 +1,11 @@
 
+import { useEffect } from 'react';
+
 export function ScoreModal({ breakdown, onClose }: { breakdown?: { [key: string]: number }, onClose: () => void }) {
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!breakdown) {
     return (

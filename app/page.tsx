@@ -10,12 +10,14 @@ import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
 import { Leaderboard } from "./components/Leaderboard";
 import { ProfileCard } from "./components/profile-card/profile-ui";
+import { Search } from "./components/Search";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
   const [isLeaderboardReady, setIsLeaderboardReady] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
+  const [username, setUsername] = useState(context?.user.username || "to");
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
@@ -25,6 +27,13 @@ export default function App() {
       setFrameReady();
     }
   }, [setFrameReady, isFrameReady]);
+
+  // Add this useEffect to update username when context becomes available
+  useEffect(() => {
+    if (context?.user?.username) {
+      setUsername(context.user.username);
+    }
+  }, [context?.user?.username]);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,6 +50,10 @@ export default function App() {
     const frameAdded = await addFrame();
     setFrameAdded(Boolean(frameAdded));
   }, [addFrame]);
+
+  const handleHome = () => {
+    setUsername(context?.user.username || "to");
+  };
 
   const saveFrameButton = useMemo(() => {
     
@@ -100,8 +113,24 @@ export default function App() {
               </div>
               
               <div className="space-y-6">
+                {/* Search */}
+                <div className="auralized-card p-4">
+                  <div className="flex items-center space-x-2">
+                    <Search onSearch={setUsername} />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleHome}
+                      className="text-[var(--app-accent)] p-2 sm:p-4"
+                      icon={<Icon name="home" size="sm" />}
+                    >
+                      <span className="hidden sm:inline">Home</span>
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Profile Card */}
-                <ProfileCard usernameToRate={context?.user.username || "to"} />
+                <ProfileCard usernameToRate={username} />
                 
                 {/* Leaderboard */}
                 <Leaderboard />

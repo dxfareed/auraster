@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sdk } from '@farcaster/miniapp-sdk';
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 import './style.css';
 import { ApiResponse } from "./types";
@@ -47,6 +48,7 @@ const preloadImages = (apiData: ApiResponse) => {
 };
 
 export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate: string, onProfileLoad?: () => void }) {
+  const { context } = useMiniKit();
   const [apiData, setApiData] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -304,9 +306,9 @@ export function ProfileCard({ usernameToRate, onProfileLoad }: { usernameToRate:
                   view full report
                 </button>
                 <button 
-                  className={`share-button ${isSharing ? 'sharing' : ''}`} 
+                  className={`share-button ${isSharing ? 'sharing' : ''}`}
                   onClick={() => handleShare()}
-                  disabled={isSharing}
+                  disabled={isSharing || usernameToRate !== context?.user.username}
                 >
                   {isSharing ? (
                     <>
