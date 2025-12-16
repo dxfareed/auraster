@@ -18,9 +18,9 @@ const preloadProfilePictures = (data: LeaderboardEntry[]) => {
   });
 };
 
-const ProfilePicture = ({ src, alt, username, onLoad }: { 
-  src: string; 
-  alt: string; 
+const ProfilePicture = ({ src, alt, username, onLoad }: {
+  src: string;
+  alt: string;
   username: string;
   onLoad: () => void;
 }) => {
@@ -51,9 +51,9 @@ const ProfilePicture = ({ src, alt, username, onLoad }: {
           <div className="skeleton-circle"></div>
         </div>
       )}
-      <img 
-        src={src} 
-        alt={alt} 
+      <img
+        src={src}
+        alt={alt}
         className={`pfp ${isLoaded ? 'loaded' : 'hidden'}`}
         onLoad={handleLoad}
         onError={handleError}
@@ -81,21 +81,23 @@ export function Leaderboard() {
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
+      console.log('Fetching leaderboard from:', API_URLS.LEADERBOARD);
       try {
+
         const response = await fetch(API_URLS.LEADERBOARD);
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Error response:', errorText);
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
-        
+
         const responseText = await response.text();
         const data = JSON.parse(responseText);
         const top10Data = data.slice(0, 100);
         console.log(top10Data);
         setLeaderboardData(top10Data);
-        
+
         preloadProfilePictures(top10Data);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch leaderboard.";
@@ -132,7 +134,7 @@ export function Leaderboard() {
       </div>
     );
   }
-  
+
   if (error) return <div className="leaderboard-widget"><p>Error: {error}</p></div>;
 
   return (
@@ -143,17 +145,17 @@ export function Leaderboard() {
         </div>
         <ol className="leaderboard-list">
           {leaderboardData.map(user => (
-            <li 
-              key={user.rank} 
+            <li
+              key={user.rank}
               className="leaderboard-row clickable-row"
               onClick={() => handleUserClick(user)}
             >
               <span className="rank">{user.rank}</span>
-              <ProfilePicture 
-                src={user.pfp_url} 
-                alt={user.username} 
+              <ProfilePicture
+                src={user.pfp_url}
+                alt={user.username}
                 username={user.username}
-                onLoad={() => {}}
+                onLoad={() => { }}
               />
               <div className="user-info">
                 <div className="name-container">
@@ -171,9 +173,9 @@ export function Leaderboard() {
       </div>
 
       {selectedUser && (
-        <ScoreModal 
-          breakdown={selectedUser.raw_breakdown} 
-          onClose={handleCloseModal} 
+        <ScoreModal
+          breakdown={selectedUser.raw_breakdown}
+          onClose={handleCloseModal}
         />
       )}
     </>

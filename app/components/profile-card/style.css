@@ -24,7 +24,7 @@
 .header-logo-image {
   position: absolute;
   top: -1px;
-  left: -20px;
+  left: -12px;
   width: 200px;
   transform: rotate(-5deg);
   z-index: 10;
@@ -165,10 +165,11 @@
   letter-spacing: 2px;
 }
 
-.points-box{
+.points-box {
   background-color: #8a63d2;
 }
-.stat-total-points{
+
+.stat-total-points {
   font-size: 20px !important;
 }
 
@@ -280,7 +281,8 @@
   margin-top: 15px;
 }
 
-.details-button, .share-button {
+.details-button,
+.share-button {
   border: 1px solid #444;
   font-family: 'VT323', monospace !important;
   font-weight: 700;
@@ -342,7 +344,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .modal-overlay {
@@ -476,18 +480,37 @@
 }
 
 @keyframes move-x {
-  0%, 100% { left: 0; }
-  50% { left: calc(100% - 100px); }
+
+  0%,
+  100% {
+    left: 0;
+  }
+
+  50% {
+    left: calc(100% - 100px);
+  }
 }
 
 @keyframes move-y {
-  0%, 100% { top: 0; }
-  50% { top: calc(100% - 50px); }
+
+  0%,
+  100% {
+    top: 0;
+  }
+
+  50% {
+    top: calc(100% - 50px);
+  }
 }
 
 @keyframes fadeInText {
-  from { opacity: 0.5; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.5;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
@@ -510,7 +533,7 @@
 
   .header-logo-image {
     width: 220px;
-    left: -25px;
+    left: -12px;
     top: -8px;
   }
 
@@ -576,7 +599,8 @@
     gap: 8px;
   }
 
-  .details-button, .share-button {
+  .details-button,
+  .share-button {
     width: 100%;
   }
 }
@@ -589,7 +613,7 @@
 
   .header-logo-image {
     width: 250px;
-    left: -30px;
+    left: -16px;
     top: -10px;
   }
 
@@ -656,7 +680,8 @@
     gap: 8px;
   }
 
-  .details-button, .share-button {
+  .details-button,
+  .share-button {
     width: 100%;
   }
 }
@@ -669,7 +694,7 @@
 
   .header-logo-image {
     width: 280px;
-    left: -35px;
+    left: -20px;
     top: -12px;
   }
 
@@ -741,7 +766,7 @@
 
   .header-logo-image {
     width: 300px;
-    left: -40px;
+    left: -24px;
     top: -15px;
   }
 
@@ -816,7 +841,8 @@
     gap: 15px;
   }
 
-  .details-button, .share-button {
+  .details-button,
+  .share-button {
     width: auto;
     flex: 1;
     max-width: 200px;
@@ -897,7 +923,8 @@
     gap: 8px;
   }
 
-  .details-button, .share-button {
+  .details-button,
+  .share-button {
     width: 100%;
   }
 }

@@ -18,7 +18,7 @@ export function Search({ onSearch }: { onSearch: (username: string) => void }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="e.g. dwr.eth"
-        className="flex-grow p-2 border-2 border-red-500 rounded-md bg-black text-white font-mono"
+        className="flex-grow min-w-0 p-2 border-2 border-red-500 rounded-md bg-black text-white font-mono"
         style={{ boxShadow: "0 0 15px rgba(255, 77, 77, 0.7)" }}
       />
       <button

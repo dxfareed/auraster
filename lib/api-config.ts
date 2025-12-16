@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002',
+  BASE_URL: '/api/proxy',
   ENDPOINTS: {
     RATE_USER: '/rate-user',
     LEADERBOARD: '/leaderboard',

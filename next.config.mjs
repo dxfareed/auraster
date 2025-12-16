@@ -6,6 +6,14 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/proxy/:path*',
+        destination: 'https://rate-user-backend.vercel.app/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
