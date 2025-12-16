@@ -37,12 +37,10 @@
   }
 }
 
-/* Make sure the display name and badge are properly aligned */
 .display-name {
   margin: 0;
 }
 
-/*  */
 .leaderboard-widget {
   width: 100%;
   max-width: 100%;
@@ -227,7 +225,6 @@
   flex-shrink: 0;
 }
 
-/* Skeleton Loader Styles */
 .skeleton-row {
   display: flex;
   align-items: center;
