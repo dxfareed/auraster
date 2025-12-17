@@ -1,8 +1,9 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
+import "@nomicfoundation/hardhat-toolbox";
+import dotenv from "dotenv";
+dotenv.config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+export default {
     solidity: "0.8.20",
     networks: {
         "base-sepolia": {
@@ -11,4 +12,22 @@ module.exports = {
             gasPrice: 1000000000,
         },
     },
+    etherscan: {
+        apiKey: {
+            "base-sepolia": process.env.BASESCAN_API_KEY || "PLACEHOLDER_KEY",
+        },
+        customChains: [
+            {
+                network: "base-sepolia",
+                chainId: 84532,
+                urls: {
+                    apiURL: "https://api-sepolia.basescan.org/api",
+                    browserURL: "https://sepolia.basescan.org"
+                }
+            }
+        ]
+    },
+    sourcify: {
+        enabled: true
+    }
 };

@@ -39,3 +39,7 @@ util/profile.json
 
 fc.md
 ch.ts
+
+# Hardhat
+artifacts/
+cache/
